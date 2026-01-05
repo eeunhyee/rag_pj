@@ -14,6 +14,24 @@ from vectorstore import VectorStore
 load_dotenv()
 
 
+def get_api_key() -> str:
+    """API 키 가져오기 (Streamlit secrets 또는 환경변수)"""
+    # 1. Streamlit secrets 확인 (Streamlit Cloud 배포용)
+    try:
+        import streamlit as st
+        if hasattr(st, 'secrets') and 'OPENROUTER_API_KEY' in st.secrets:
+            return st.secrets['OPENROUTER_API_KEY']
+    except ImportError:
+        pass
+
+    # 2. 환경변수 확인 (로컬 개발용)
+    api_key = os.getenv("OPENROUTER_API_KEY")
+    if api_key:
+        return api_key
+
+    raise ValueError("OPENROUTER_API_KEY 환경변수를 설정해주세요.")
+
+
 class RAGChain:
     """RAG 체인: 검색 + 답변 생성"""
 
@@ -28,9 +46,7 @@ class RAGChain:
         self.temperature = temperature
 
         # OpenRouter 클라이언트 초기화
-        api_key = os.getenv("OPENROUTER_API_KEY")
-        if not api_key:
-            raise ValueError("OPENROUTER_API_KEY 환경변수를 설정해주세요.")
+        api_key = get_api_key()
 
         self.client = OpenAI(
             base_url="https://openrouter.ai/api/v1",

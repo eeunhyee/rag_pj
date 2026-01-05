@@ -58,8 +58,16 @@ def main():
     # RAG 시스템 로드
     try:
         rag = load_rag_system()
+    except ValueError as e:
+        if "OPENROUTER_API_KEY" in str(e):
+            st.error("시스템 로드 실패: OPENROUTER_API_KEY 환경변수를 설정해주세요.")
+            st.info("**Streamlit Cloud 배포 시:** Settings > Secrets에서 `OPENROUTER_API_KEY = \"your_key\"` 추가")
+        else:
+            st.error(f"시스템 로드 실패: {e}")
+        return
     except Exception as e:
-        st.error(f"시스템 로드 실패: {e}")
+        error_msg = str(e)
+        st.error(f"시스템 로드 실패: {error_msg}")
         st.info("먼저 `python main.py --index` 로 인덱싱을 실행해주세요.")
         return
 
