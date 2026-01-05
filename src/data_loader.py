@@ -49,10 +49,10 @@ class LegalDataLoader:
             "file_path": str(file_path),
         }
 
-        # 구분 정보가 있으면 추출
+        # 구분 정보가 있으면 추출 (문자열로 변환)
         if '구분' in df.columns:
             sections = df['구분'].unique().tolist()
-            metadata["sections"] = sections
+            metadata["sections"] = ", ".join(str(s) for s in sections)
 
         return {
             "content": content,
